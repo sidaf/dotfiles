@@ -1,19 +1,7 @@
 # Kali-only stuff. Abort if not Kali.
 is_kali || return 1
 
-# install packages
-function apt_install_packages() {
-  installed_apt_packages="$(dpkg --get-selections | grep -v deinstall | awk 'BEGIN{FS="[\t:]"}{print $1}' | uniq)"
-  packages=($(setdiff "${packages[*]}" "$installed_apt_packages"))
-  if (( ${#packages[@]} > 0 )); then
-    echo "[*] Installing packages: ${packages[*]}"
-    for package in "${packages[@]}"; do
-      sudo LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -y -qq install "$package"
-    done
-  fi
-}
-
-packages=(
+apt_packages=(
 apt-transport-https
 at
 bash-completion
@@ -77,7 +65,36 @@ xsltproc
 zip
 )
 
+pip_packages=(
+  pipx
+)
+
+function apt_install_packages() {
+  installed_apt_packages="$(dpkg --get-selections | grep -v deinstall | awk 'BEGIN{FS="[\t:]"}{print $1}' | uniq)"
+  packages=($(setdiff "${apt_packages[*]}" "$installed_apt_packages"))
+  if (( ${#packages[@]} > 0 )); then
+    e_header "Installing apt packages: ${apt_packages[*]}"
+    for package in "${apt_packages[@]}"; do
+      sudo LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get -y -qq install "$package"
+    done
+  fi
+}
+
 apt_install_packages
+
+function pip_install_packages() {
+  installed_pip_packages="$(pip list 2>/dev/null | awk '{print $1}')"
+  pip_packages=($(setdiff "${pip_packages[*]}" "$installed_pip_packages"))
+
+  if (( ${#pip_packages[@]} > 0 )); then
+    e_header "Installing pip packages (${#pip_packages[@]})"
+    for package in "${pip_packages[@]}"; do
+      pip install "$package"
+    done
+  fi
+}
+
+pip_install_packages
 
 if [ -d "$HOME/.scripts/.git" ] ; then
   echo '[*] Updating scripts repository from github'
@@ -101,10 +118,4 @@ if [ -d "$HOME/.recon-ng/.git" ] ; then
 else
   echo '[*] Cloning recon-ng scripts repository from github'
   git clone --quiet https://github.com/sidaf/recon-ng-scripts $HOME/.recon-ng
-fi
-
-if [[ "$(type -P pipx)" ]]; then
-  python3 -m pip install --user -U pipx
-else
-  python3 -m pip install --user pipx
 fi
