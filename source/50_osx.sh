@@ -15,7 +15,7 @@ alias c="tr -d '\n' | pbcopy"
 alias ss="open /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"
 
 # Enable Bash completion if available
-if type brew &>/dev/null; then
+if [[ "$(type -P brew)" ]]; then
   HOMEBREW_PREFIX="$(brew --prefix)"
   if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
