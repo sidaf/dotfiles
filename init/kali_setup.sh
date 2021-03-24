@@ -3,7 +3,8 @@ is_kali || return 1
 
 # install packages
 function apt_install_packages() {
-  packages=($(setdiff "${packages[*]}" "$(dpkg --get-selections | grep -v deinstall | awk '{print $1}')"))
+  installed_apt_packages="$(dpkg --get-selections | grep -v deinstall | awk 'BEGIN{FS="[\t:]"}{print $1}' | uniq)"
+  packages=($(setdiff "${packages[*]}" "$installed_apt_packages"))
   if (( ${#packages[@]} > 0 )); then
     echo "[*] Installing packages: ${packages[*]}"
     for package in "${packages[@]}"; do
@@ -54,6 +55,7 @@ parted
 python3
 python3-dev
 python3-pip
+python3-venv
 rsh-client
 rsync
 ruby
@@ -99,4 +101,10 @@ if [ -d "$HOME/.recon-ng/.git" ] ; then
 else
   echo '[*] Cloning recon-ng scripts repository from github'
   git clone --quiet https://github.com/sidaf/recon-ng-scripts $HOME/.recon-ng
+fi
+
+if [[ "$(type -P pipx)" ]]; then
+  python3 -m pip install --user -U pipx
+else
+  python3 -m pip install --user pipx
 fi
