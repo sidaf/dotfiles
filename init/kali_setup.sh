@@ -68,6 +68,7 @@ unrar
 unzip
 upx-ucl
 vlan
+vim
 wget
 whois
 xsltproc
