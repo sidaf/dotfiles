@@ -41,7 +41,7 @@ if [ "$color_prompt" = yes ]; then
   normal_bold_color='\[\033[0;1m\]'
   prompt_status_color='\e[38;5;202m\]'
   #prompt_color='\[\033[;32m\]'
-  prompt_color='\[\e[38;5;245m\]'
+  prompt_color='\[\e[0;38;5;245m\]'
   #info_color='\[\e[1;38;5;245m\]'
   info_color='\[\033[1;32m\]'
   if [ "$EUID" -eq 0 ]; then
