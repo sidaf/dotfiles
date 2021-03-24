@@ -93,7 +93,8 @@ function pip_install_packages() {
   if (( ${#pip_packages[@]} > 0 )); then
     e_header "Installing pip packages (${#pip_packages[@]})"
     for package in "${pip_packages[@]}"; do
-      pip install "$package"
+      #pip install "$package"
+      python3 -m pip install --user "$package"
     done
   fi
 }
