@@ -1,0 +1,9 @@
+# autocomplete commands based on history, use PGUP and PGDOWN to cycle
+#"\e[5~": history-search-backward
+#"\e[6~": history-search-forward
+# autocomplete commands based on history, use UP and DOWN keys to cycle
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+#set show-all-if-ambiguous on
+#set completion-ignore-case on
+#TAB: menu-complete
