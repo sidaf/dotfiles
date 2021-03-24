@@ -1,10 +1,32 @@
 if [[ "$(type -P docker)" ]]; then
   function docker_shell() {
-    docker run --rm -it -v "${HOME}/.ssh":/root/.ssh -v "${HOME}/.bash_private":/root/.bash_private:ro "$@"
+    BASH_PRIVATE=".bash_private"
+    if [[ -f "${HOME}/${BASH_PRIVATE}" ]]; then
+      VOLUMES="-v ${HOME}/${BASH_PRIVATE}:/root/${BASH_PRIVATE}:ro"
+    fi
+
+    SSH_DIR=".ssh"
+    if [[ -d "${HOME}/${SSH_DIR}" ]]; then
+      VOLUMES="${VOLUMES} -v ${HOME}/${SSH_DIR}:/root/${SSH_DIR}:ro"
+    fi
+
+    docker run --rm -it ${VOLUMES} "$@"
   }
 
   function docker_shell_here() {
-    dirname=${PWD##*/}
-    docker run --rm -it -v "${HOME}/.ssh":/root/.ssh -v "${HOME}/.bash_private":/root/.bash_private:ro -v "${PWD}":"/${dirname}" -w "/${dirname}" "$@"
+    BASH_PRIVATE=".bash_private"
+    if [[ -f "${HOME}/${BASH_PRIVATE}" ]]; then
+      VOLUMES="-v ${HOME}/${BASH_PRIVATE}:/root/${BASH_PRIVATE}:ro"
+    fi
+
+    SSH_DIR=".ssh"
+    if [[ -d "${HOME}/${SSH_DIR}" ]]; then
+      VOLUMES="${VOLUMES} -v ${HOME}/${SSH_DIR}:/root/${SSH_DIR}:ro"
+    fi
+
+    DIRNAME=${PWD##*/}
+    VOLUMES="${VOLUMES} -v ${PWD}:/${DIRNAME} -w /${DIRNAME}"
+
+    docker run --rm -it ${VOLUMES} "$@"
   }
 fi
