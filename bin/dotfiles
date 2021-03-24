@@ -70,7 +70,7 @@ function is_ubuntu() {
   fi
 }
 function is_kali() {
-  [[ "$(cat /etc/issue 2> /dev/null)" =~ Kali ]] || return 1
+  [[ "$(lsb_release -i 2> /dev/null)" =~ Kali ]] || return 1
 }
 function is_arch() {
   [[ "$(cat /etc/issue 2> /dev/null)" =~ "Arch Linux"  ]] || return 1

@@ -44,6 +44,10 @@ python3
 python3-dev
 python3-pip
 python3-venv
+python3-colorama
+python3-userpath
+python3-argcomplete
+python3-packaging
 rsh-client
 rsync
 ruby
