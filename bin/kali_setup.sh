@@ -1,5 +1,5 @@
 # Kali-only stuff. Abort if not Kali.
-is_kali || return 1
+[[ "$(cat /etc/issue 2> /dev/null)" =~ Kali || "$(lsb_release -i 2> /dev/null)" =~ Kali ]] || return 1
 
 apt_packages=(
 apt-transport-https
@@ -84,8 +84,6 @@ function apt_install_packages() {
   fi
 }
 
-apt_install_packages
-
 function pip_install_packages() {
   installed_pip_packages="$(pip list 2>/dev/null | awk '{print $1}')"
   pip_packages=($(setdiff "${pip_packages[*]}" "$installed_pip_packages"))
@@ -99,6 +97,7 @@ function pip_install_packages() {
   fi
 }
 
+apt_install_packages
 pip_install_packages
 
 if [ -d "$HOME/.scripts/.git" ] ; then
