@@ -36,7 +36,7 @@ if [[ "$(type -P tree)" ]]; then
   alias ll='tree --dirsfirst -aLpughDFiC 1'
   alias lsd='ll -d'
 else
-  alias ll='ls -al'
+  alias ll='ls -alh'
   alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 fi
 
