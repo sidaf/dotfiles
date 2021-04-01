@@ -57,7 +57,6 @@ function docker_shell() {
   fi
 
   echo docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
-  return
   docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
 }
 
