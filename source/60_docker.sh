@@ -55,20 +55,42 @@ function docker_shell_here() {
 
 function docker_inject_gateway() {
   CONTAINER=$1
-  ROUTE=$2
+  ROUTER=$2
 
-  if [[ $# -eq 0 || "$*" == "--help" || "$*" == "-h" ]]; then
-    echo "Usage: docker_inject_gateway <container> [route|172.17.0.2]"
+  if [[ $# -ne 2 || "$*" == "--help" || "$*" == "-h" ]]; then
+    echo "Usage: docker_inject_gateway <container> <router_container>"
     return 1
   fi
 
-  if [[ $# -lt 2 ]]; then
-    ROUTE="172.17.0.2"
+  BLUE="\e[34m"
+  RED="\e[31m"
+  BOLD="\e[1m"
+  NORMAL="\e[0m"
+
+  if [[ "${CONTAINER}" == "${ROUTER}" ]]; then
+    echo -e "${RED}[-]${NORMAL} Umm, a container can't route traffic through itself..."
+    return 1
   fi
 
-  docker exec --privileged -t -i ${CONTAINER} sh -c "ip route del default"
-  docker exec --privileged -t -i ${CONTAINER} sh -c "ip route add default via ${ROUTE}"
-  docker exec --privileged -t -i ${CONTAINER} sh -c "echo 'nameserver ${ROUTE}' > /etc/resolv.conf"
+  ROUTE=$(docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${ROUTER})
+  if [[ ! $? -eq 0 ]]; then
+    echo -e "${RED}[-]${NORMAL} Could not retrieve the IP address for container ${ROUTER}"
+    return 1
+  fi
+  ROUTE=${ROUTE//[$'\t\r\n ']}
+
+
+  echo -ne "${BLUE}[>]${NORMAL} Routing traffic from ${BOLD}${CONTAINER}${NORMAL} through ${BOLD}${ROUTER}${NORMAL} (${BOLD}${ROUTE}${NORMAL}) ... "
+
+  docker exec --privileged -t -i ${CONTAINER} sh -c "ip route del default" && \
+    docker exec --privileged -t -i ${CONTAINER} sh -c "ip route add default via ${ROUTE}" && \
+    docker exec --privileged -t -i ${CONTAINER} sh -c "echo 'nameserver ${ROUTE}' > /etc/resolv.conf"
+
+  if [[ $? -eq 0 ]]; then
+    echo "done"
+  else
+    echo -e "\n${RED}[-]${NORMAL} Uh-oh, something went wrong :-("
+  fi
 }
 
 _docker_shell_completions()
@@ -83,11 +105,7 @@ _docker_shell_completions()
 
 _docker_inject_gateway_completions()
 {
-  if [ "${#COMP_WORDS[@]}" != "2" ]; then
-    return
-  fi
-
-  COMPREPLY=($(compgen -W "$(docker ps --format "{{.Names}}")" -- "${COMP_WORDS[1]}"))
+  COMPREPLY=($(compgen -W "$(docker ps --format "{{.Names}}")" -- "${COMP_WORDS[COMP_CWORD]}"))
 }
 
 complete -F _docker_shell_completions docker_shell
