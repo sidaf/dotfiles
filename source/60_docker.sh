@@ -3,17 +3,22 @@ if [[ ! "$(type -P docker)" ]]; then
 fi
 
 function docker_shell() {
-
   if [[ $# -eq 0 || "$*" == "--help" || "$*" == "-h" ]]; then
-    echo "Usage: docker_shell [options] <image> [command]"
+    echo "Usage: ${FUNCNAME[${#FUNCNAME[@]}-1]} [options] <image> [command]"
     return 1
   fi
 
-  VOLUMES=""
-  PRIVILEGED=""
-  ARGS="--interactive --tty"
+  local VOLUMES
+  local ARGS
+  local PRIVILEGED
 
-  if [[ -z "${VBASH}" ]] || [[ "${VBASH}" -eq 1 ]]; then
+  if [[ "${VOLS}" -eq 1 ]]; then
+    VBASH=1
+    VSSH=1
+    VSCR=1
+  fi
+
+  if [[ "${VBASH}" -eq 1 ]]; then
     BASH_PRIVATE=".bash_private"
     if [[ -f "${HOME}/${BASH_PRIVATE}" ]]; then
       VOLUMES+="--volume ${HOME}/${BASH_PRIVATE}:/root/${BASH_PRIVATE}:ro "
@@ -27,10 +32,19 @@ function docker_shell() {
     fi
   fi
 
+  if [[ "${VSCR}" -eq 1 ]]; then
+    SCRIPTS_DIR=".scripts"
+    if [[ -d "${HOME}/${SCRIPS_DIR}" ]]; then
+      VOLUMES+="--volume ${HOME}/${SCRIPTS_DIR}:/root/${SCRIPTS_DIR} "
+    fi
+  fi
+
   if [[ "${HERE}" -eq 1 ]]; then
     DIRNAME=${PWD##*/}
-    VOLUMES+="--volume ${PWD}:/${DIRNAME} --workdir /${DIRNAME}"
+    VOLUMES+="--volume ${PWD}:/${DIRNAME} --workdir /${DIRNAME} "
   fi
+
+  VOLUMES="$(echo -e "${VOLUMES}" | sed -e 's/[[:space:]]*$//')"
 
   if [[ "${PRIV}" -eq 1 ]]; then
     PRIVILEGED="--privileged"
@@ -38,19 +52,17 @@ function docker_shell() {
 
   if [[ "${DETACH}" -eq 1 ]]; then
     ARGS="--detach"
+  else
+    ARGS="--interactive --tty"
   fi
 
+  echo docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
+  return
   docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
 }
 
 function docker_shell_here() {
-
-  if [[ $# -eq 0 || "$*" == "--help" || "$*" == "-h" ]]; then
-    echo "Usage: docker_shell_here [options] <image> [command]"
-    return 1
-  fi
-
-  HERE=1 docker_shell "$@"
+  HERE=1 VOLS=1 docker_shell "$@"
 }
 
 function docker_inject_gateway() {
@@ -74,7 +86,7 @@ function docker_inject_gateway() {
 
   ROUTE=$(docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${ROUTER})
   if [[ ! $? -eq 0 ]]; then
-    echo -e "${RED}[-]${NORMAL} Could not retrieve the IP address for container ${ROUTER}"
+    echo -e "${RED}[-]${NORMAL} Uh-oh, could not retrieve the IP address for container ${ROUTER}"
     return 1
   fi
   ROUTE=${ROUTE//[$'\t\r\n ']}
