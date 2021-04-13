@@ -75,6 +75,7 @@ function docker_inject_gateway() {
 
   BLUE="\e[34m"
   RED="\e[31m"
+  GREEN="\e[32m"
   BOLD="\e[1m"
   NORMAL="\e[0m"
 
@@ -91,16 +92,16 @@ function docker_inject_gateway() {
   ROUTE=${ROUTE//[$'\t\r\n ']}
 
 
-  echo -ne "${BLUE}[>]${NORMAL} Routing traffic from ${BOLD}${CONTAINER}${NORMAL} through ${BOLD}${ROUTER}${NORMAL} (${BOLD}${ROUTE}${NORMAL}) ... "
+  echo -ne "${BLUE}[>]${NORMAL} Attempting to set default gateway of ${BOLD}${CONTAINER}${NORMAL} to ${BOLD}${ROUTER}${NORMAL} (${BOLD}${ROUTE}${NORMAL}) ... "
 
   docker exec --privileged -t -i ${CONTAINER} sh -c "ip route del default" && \
     docker exec --privileged -t -i ${CONTAINER} sh -c "ip route add default via ${ROUTE}" && \
     docker exec --privileged -t -i ${CONTAINER} sh -c "echo 'nameserver ${ROUTE}' > /etc/resolv.conf"
 
   if [[ $? -eq 0 ]]; then
-    echo "done"
+    echo -e "done"
   else
-    echo -e "\n${RED}[-]${NORMAL} Uh-oh, something went wrong :-("
+    echo -e "${RED}failed${NORMAL}"
   fi
 }
 
@@ -120,5 +121,5 @@ _docker_inject_gateway_completions()
 }
 
 complete -F _docker_shell_completions docker_shell
-complete -F _docker_shell_here_completions docker_shell_here
+complete -F _docker_shell_completions docker_shell_here
 complete -F _docker_inject_gateway_completions docker_inject_gateway
