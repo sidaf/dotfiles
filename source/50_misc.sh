@@ -69,3 +69,5 @@ export LESS=-XR
 
 # Convert from utf to ascii
 alias utf2ascii="iconv -c -f utf-8 -t ascii"
+
+alias jl="jupyter-lab --allow-root --ip=0.0.0.0 --no-browser"

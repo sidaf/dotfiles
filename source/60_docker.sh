@@ -5,7 +5,7 @@ fi
 function docker_shell() {
   if [[ $# -eq 0 || "$*" == "--help" || "$*" == "-h" ]]; then
     echo "Usage: ${FUNCNAME[${#FUNCNAME[@]}-1]} [options] <image> [command]"
-    return 1
+    return 127
   fi
 
   local VOLUMES
@@ -40,8 +40,9 @@ function docker_shell() {
   fi
 
   if [[ "${HERE}" -eq 1 ]]; then
-    DIRNAME=${PWD##*/}
-    VOLUMES+="--volume ${PWD}:/${DIRNAME} --workdir /${DIRNAME} "
+    HERE_PATH=$(printf %q "${PWD}")
+    HERE_NAME=$(printf %q "${PWD##*/}")
+    VOLUMES+="--volume ${HERE_PATH}:/${HERE_NAME} --workdir /${HERE_NAME} "
   fi
 
   VOLUMES="$(echo -e "${VOLUMES}" | sed -e 's/[[:space:]]*$//')"
@@ -70,7 +71,7 @@ function docker_inject_gateway() {
 
   if [[ $# -ne 2 || "$*" == "--help" || "$*" == "-h" ]]; then
     echo "Usage: docker_inject_gateway <container> <router_container>"
-    return 1
+    return 127
   fi
 
   BLUE="\e[34m"
@@ -81,13 +82,13 @@ function docker_inject_gateway() {
 
   if [[ "${CONTAINER}" == "${ROUTER}" ]]; then
     echo -e "${RED}[-]${NORMAL} Umm, a container can't route traffic through itself..."
-    return 1
+    return 127
   fi
 
   ROUTE=$(docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${ROUTER})
   if [[ ! $? -eq 0 ]]; then
     echo -e "${RED}[-]${NORMAL} Uh-oh, could not retrieve the IP address for container ${ROUTER}"
-    return 1
+    return 127
   fi
   ROUTE=${ROUTE//[$'\t\r\n ']}
 
