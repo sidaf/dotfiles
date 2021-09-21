@@ -332,7 +332,7 @@ if [[ ! -d $DOTFILES ]]; then
   new_dotfiles_install=1
   prompt_delay=15
   e_header "Downloading dotfiles"
-  git clone -–depth 1 --recursive git://github.com/${github_user:-sidaf}/dotfiles.git $DOTFILES
+  git clone -–depth=1 --single-branch --recursive git://github.com/${github_user:-sidaf}/dotfiles.git $DOTFILES
   cd $DOTFILES
 elif [[ "$1" != "restart" ]]; then
   # Make sure we have the latest files.
