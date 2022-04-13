@@ -10,7 +10,6 @@ function docker_shell() {
 
   local VOLUMES
   local ARGS
-  local PRIVILEGED
 
   if [[ "${VOLS}" -eq 1 ]]; then
     VBASH=1
@@ -47,18 +46,14 @@ function docker_shell() {
 
   VOLUMES="$(echo -e "${VOLUMES}" | sed -e 's/[[:space:]]*$//')"
 
-  if [[ "${PRIV}" -eq 1 ]]; then
-    PRIVILEGED="--privileged"
-  fi
-
   if [[ "${DETACH}" -eq 1 ]]; then
     ARGS="--detach"
   else
     ARGS="--interactive --tty"
   fi
 
-  echo docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
-  docker run ${ARGS} --rm ${PRIVILEGED} ${VOLUMES} "$@"
+  echo "-> docker run ${ARGS} --rm --privileged ${VOLUMES} $@"
+  docker run ${ARGS} --rm --privileged ${VOLUMES} $@
 }
 
 function docker_shell_here() {

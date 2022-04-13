@@ -1,6 +1,6 @@
 [user]
-  name = sidaf
-  email = sion.dafydd@gmail.com
+	name = Sion Dafydd
+	email = sdafydd@secureworks.com
 [push]
 #  default = simple
   default = matching
@@ -24,3 +24,5 @@
   untracked = cyan
 [pull]
   rebase = false
+[core]
+	autocrlf = input

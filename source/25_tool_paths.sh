@@ -1,4 +1,5 @@
 path_prepend "$HOME/bin"
+path_prepend "$HOME/.bin"
 path_prepend "$HOME/.local/bin"
 path_append "$HOME/Tools/Scripts"
 path_append "$HOME/Scripts"
