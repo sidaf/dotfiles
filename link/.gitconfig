@@ -1,6 +1,8 @@
 [user]
-	name = Sion Dafydd
-	email = sdafydd@secureworks.com
+#	name = Sion Dafydd
+#	email = sdafydd@secureworks.com
+  name = sidaf
+  email = sion.dafydd@gmail.com
 [push]
 #  default = simple
   default = matching
