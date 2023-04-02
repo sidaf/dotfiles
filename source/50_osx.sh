@@ -39,3 +39,8 @@ fi
 if [ -f /Applications/VMware\ Fusion.app/Contents/Library/vmrun ]; then
   alias vmrun="/Applications/VMware\ Fusion.app/Contents/Library/vmrun"
 fi
+
+# Allow vmrun to be accessed easily if available
+if [ -f "/Applications/VMware Fusion.app/Contents/Library/VMware OVF Tool/ovftool" ]; then
+  alias ovftool="/Applications/VMware\ Fusion.app/Contents/Library/VMware\ OVF\ Tool/ovftool"
+fi
