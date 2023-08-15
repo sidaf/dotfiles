@@ -50,7 +50,7 @@ if [ "$color_prompt" = yes ]; then
     prompt_color='\[\e[38;5;245m\]'
     info_color='\[\033[1;31m\]'
   fi
-  PS1=$prompt_color'┌─${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+('$normal_bold_color'$(basename $VIRTUAL_ENV)'$prompt_color')}['$info_color'\u${prompt_at}\h'$prompt_color':'$normal_bold_color'\w'$prompt_color']\n'$prompt_color'└'$info_color'$(prompt_symbol)'$normal_color' '
+  PS1=$prompt_color'┌─${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+('$normal_bold_color'$(basename $VIRTUAL_ENV)'$prompt_color')}[${timer_show}]['$info_color'\u${prompt_at}\h'$prompt_color':'$normal_bold_color'\w'$prompt_color']\n'$prompt_color'└'$info_color'$(prompt_symbol)'$normal_color' '
   #PS1=$prompt_color'┌─${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+('$normal_bold_color'$(basename $VIRTUAL_ENV)'$prompt_color')}['$info_color'\u${prompt_at}\h'$prompt_color':'$normal_bold_color'\w'$prompt_color']\n'$prompt_color'└'$prompt_status_color'$(prompt_status)'$info_color'$(prompt_symbol)'$normal_color' '
   #PS1='${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV)) }${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
